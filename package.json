@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/ksakuran/tinyapp/issues"
   },
-  "homepage": "https://github.com/ksakuran/tinyapp#readme"
+  "homepage": "https://github.com/ksakuran/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
