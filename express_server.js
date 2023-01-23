@@ -9,7 +9,7 @@ const urlDatabase = {
 };
 
 // "/" root path
-app.length("/", (request, response) => {
+app.get("/", (request, response) => {
   response.send("Hello!");
 });
 
