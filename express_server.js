@@ -23,6 +23,14 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };  
+app.get("/u/:id", (req, res) => {
+  console.log(req.params.id);
+  const longURL = urlDatabase[req.params.id];
+  console.log(longURL)
+  res.redirect(`${longURL}`);
+});
+
+
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
@@ -57,7 +65,7 @@ app.post("/urls", (req, res) => {
   console.log(req.body.longURL);
   //console.log(urlDatabase);
   
-  res.redirect(`/urls/:${id}`);
+  res.redirect(`/urls/${id}`);
 });
 
 
