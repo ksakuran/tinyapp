@@ -23,6 +23,17 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };  
+
+app.post("/urls/:id/delete", (req, res) => {
+  //console.log("req.params", req.params);
+  const id = req.params.id;
+  //console.log("urlDatabase.id", urlDatabase[id])
+  delete urlDatabase[id];
+  //console.log("urlDatabase.id after delete", urlDatabase[id])
+  res.redirect("/urls")
+
+});
+
 app.get("/u/:id", (req, res) => {
   console.log(req.params.id);
   const longURL = urlDatabase[req.params.id];
