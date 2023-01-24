@@ -22,16 +22,17 @@ app.use(express.urlencoded({ extended: true}));
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
-};
-
+};  
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]};
   res.render("urls_show", templateVars);
-});
+});  
+
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -51,8 +52,12 @@ app.get("/", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
-  res.send("Ok");
+  const id = generateRandomString();
+  urlDatabase[id] = req.body.longURL;
+  console.log(req.body.longURL);
+  //console.log(urlDatabase);
+  
+  res.redirect(`/urls/:${id}`);
 });
 
 
