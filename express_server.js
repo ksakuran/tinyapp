@@ -1,3 +1,13 @@
+const generateRandomString() {
+  let randomString = ""
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz"
+    for (let i = 0; i <= 6; i++) {
+      randomString += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return randomString;
+};
+
+
 const { response } = require("express");
 const express = require("express");
 const app = express();
@@ -5,6 +15,9 @@ const morgan = require("morgan");
 const PORT = 8080; //default port on 8080;
 
 app.set("view engine", "ejs");
+
+//middleware, parses body data
+app.use(express.urlencoded({ extended: true}));
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -37,9 +50,10 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-// app.post("/urls/new", (req, res) => {
-
-// });
+app.post("/urls", (req, res) => {
+  console.log(req.body);
+  res.send("Ok");
+});
 
 
 
