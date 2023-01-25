@@ -26,6 +26,11 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls")
+});
+
 app.post("/urls/:id/update", (req, res) => {
   const id = req.params.id
   //console.log("id", id);
@@ -34,7 +39,7 @@ app.post("/urls/:id/update", (req, res) => {
   res.redirect("/urls")
 });
 
-app.post("/urls/id/delete", (req, res) => {
+app.post("/urls/:id/delete", (req, res) => {
   //console.log("req.params", req.params);
   const id = req.params.id;
   //console.log("urlDatabase.id", urlDatabase[id])
