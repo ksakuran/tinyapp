@@ -22,6 +22,21 @@
       </div>
       <div class="card-footer text-muted"></div>
     </div>
+    <div class="card text-center">
+      <div class="card-header"></div>
+      <div class="card-body">
+        <h5 class="card-title">Edit</h5>
+        <p class="card-text">
+          <form method="POST" action="/urls/<%= id %>/update">
+            <label for="longurl">New URL:</label>
+            <input id="longurl" type="text" name="longurl"/>         
+          <button>Submit</button>
+          </form>
+        </p>
+        <h6>Reassign this Short URL ID to a New URL</h6>
+      </div>
+      <div class="card-footer text-muted"></div>
+    </div>
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

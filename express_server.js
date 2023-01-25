@@ -22,9 +22,17 @@ app.use(express.urlencoded({ extended: true}));
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
-};  
+};
 
-app.post("/urls/:id/delete", (req, res) => {
+app.post("/urls/:id/update", (req, res) => {
+  const id = req.params.id
+  //console.log("id", id);
+  //console.log(req.body.longurl)
+  urlDatabase[id] = req.body.longurl
+  res.redirect("/urls")
+});
+
+app.post("/urls/id/delete", (req, res) => {
   //console.log("req.params", req.params);
   const id = req.params.id;
   //console.log("urlDatabase.id", urlDatabase[id])
@@ -35,9 +43,9 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-  console.log(req.params.id);
+  //console.log(req.params.id);
   const longURL = urlDatabase[req.params.id];
-  console.log(longURL)
+  //console.log(longURL)
   res.redirect(`${longURL}`);
 });
 
@@ -73,7 +81,7 @@ app.get("/", (req, res) => {
 app.post("/urls", (req, res) => {
   const id = generateRandomString();
   urlDatabase[id] = req.body.longURL;
-  console.log(req.body.longURL);
+  //console.log(req.body.longURL);
   //console.log(urlDatabase);
   
   res.redirect(`/urls/${id}`);
