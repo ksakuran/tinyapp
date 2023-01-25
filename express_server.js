@@ -49,6 +49,14 @@ app.get("/u/:id", (req, res) => {
   res.redirect(`${longURL}`);
 });
 
+app.post("/login", (req, res) => {
+  //console.log("req.body", req.body);
+  const username = req.body.username;
+  //console.log("username: ", username);
+  res.cookie("username", username);
+  res.redirect("/urls");
+});
+
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
@@ -74,9 +82,6 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
 
 app.post("/urls", (req, res) => {
   const id = generateRandomString();
@@ -87,6 +92,9 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${id}`);
 });
 
+app.get("/", (req, res) => {
+  res.send("Hello!");
+});
 
 
 app.listen(PORT, () => {
