@@ -43,14 +43,26 @@ const users = {
 app.post("/register", (req, res) => {
   //console.log("req.body", req.body);
   const id = generateRandomString();
-  const email = req.body.email;
+  const emails = req.body.email;
   const password = req.body.password;
+  
+  if(!password || !emails) {
+    return res.status(400).send("Please enter an email and a password");
+  }
+  
+  for (let user in users) {
+    console.log(users[user].email)
+     if (users[user].email === emails) {
+       return res.status(400).send("Email has already been registered");
+     }
+  }
+
   users[id] = {
     id: id,
-    email: email,
+    email: emails,
     password: password};
     res.cookie("userID", users[id])
-  console.log("users:", users);
+  //console.log("users:", users);
   res.redirect("/urls")
 });
 
