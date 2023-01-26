@@ -12,6 +12,7 @@
   </head>
 
   <body>
+    <%- include('partials/_header'); %>
     <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
@@ -26,14 +27,17 @@
       <div class="card-header"></div>
       <div class="card-body">
         <h5 class="card-title">Edit</h5>
+        <h6>Reassign this Short URL ID to a New URL</h6>
         <p class="card-text">
           <form method="POST" action="/urls/<%= id %>/update">
             <label for="longurl">New URL:</label>
-            <input id="longurl" type="text" name="longurl"/>         
-          <button>Submit</button>
+            <input 
+            class="form-control"
+            id="longurl" type="text" name="longurl"/> 
+            <br>        
+          <button class="btn btn-primary">Submit</button>
           </form>
         </p>
-        <h6>Reassign this Short URL ID to a New URL</h6>
       </div>
       <div class="card-footer text-muted"></div>
     </div>
