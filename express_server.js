@@ -9,14 +9,19 @@ const generateRandomString = () => {
 
 
 const getUserByEmail = (email) => {
+  
   for (let user in users) {
-    let userProfile = users[user]
-    let userEmail = users[user].email
-    if (email !== userEmail) {
-      return null;
+    let userProfile = users[user];
+    let userEmail = users[user].email;
+
+    if (email === userEmail) {
+      //console.log("hello exsisting user")
+      return userProfile;
     }
-    return userProfile;
-  }
+    
+  } 
+  //console.log("hello new user")
+  return null;
 };
 
 
@@ -53,7 +58,6 @@ const users = {
 };
 
 app.post("/register", (req, res) => {
-  //console.log("req.body", req.body);
   const id = generateRandomString();
   const userEmail = req.body.email;
   const password = req.body.password;
@@ -62,20 +66,17 @@ app.post("/register", (req, res) => {
     return res.status(400).send("Please enter an email and a password");
   }
 
-  for (let user in users) {
-    if (users[user].email === userEmail) {
-      return res.status(400).send("Email address already registered");
-    }
+  if(getUserByEmail(userEmail)) {
+    return res.status(400).send("Email address is already registered");
   }
-
+  console.log("hello")
   users[id] = {
     id: id,
     email: userEmail,
     password: password
   };
-  res.cookie("userID", users[id])
-  console.log("users:", users);
-  res.redirect("/urls")
+  //res.cookie("userID", users[id])
+  return res.redirect("/login");
 });
 
 
@@ -83,7 +84,6 @@ app.post("/register", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("userID");
   res.clearCookie("email");
-  res.clearCookie("password");
   res.redirect("/login")
 });
 
@@ -116,7 +116,21 @@ app.post("/login", (req, res) => {
   //console.log("req.body", req.body);
   const email = req.body.email;
   const password =req.body.password;
-  res.cookie("password", password)
+
+  console.log("getuserbyemail",getUserByEmail(email));
+
+  if (!getUserByEmail(email)) {
+    return res.status(403).send("User credentials not found");
+  }
+
+  userData = getUserByEmail(email);
+  
+  if (userData.password !== password) {
+    return res.status(403).send("Password is incorrect")
+  }
+
+  res.cookie("userID", userData.id)
+  //res.cookie("password", password)
   res.cookie("email", email);
   res.redirect("/urls");
 });

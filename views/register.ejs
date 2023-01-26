@@ -21,15 +21,21 @@
         <%- include('partials/_header'); %>
       </header>
       <br>
-      <div>&nbsp;Register for TinyApp</div>
+      <h2>&nbsp;Create Account</h2>
       <br>
       <div>
         <form method="POST" action="/register">
-          &nbsp;<label for="email">email</label>&nbsp;
-          <input id="email" type="email" name="email"/>&nbsp;
-          <label for="password">password</label>&nbsp;
-          <input id="password" type="password" name="password">&nbsp;
-          <button type="submit">create account</button>
+          &nbsp;&nbsp;<label for="email">Email Address:</label>      
+          &nbsp;<input 
+            class="form-control"
+            style="width: 300px; margin: 1em"
+            id="email" type="email" name="email"/>
+          &nbsp;&nbsp;<label for="password">Password:</label>      
+          &nbsp;<input
+            class="form-control"
+            style="width: 300px; margin: 1em" 
+            id="password" type="password" name="password">
+          &nbsp;&nbsp;<button type="submit" class="btn btn-primary">Register</button>
         </form>
       </div>
       </body>

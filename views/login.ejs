@@ -21,15 +21,21 @@
         <%- include('partials/_header'); %>
       </header>
       <br>
-      <div>&nbsp;Login to TinyApp</div>
+      <h2>&nbsp;Login to TinyApp</h2>
       <br>
       <div>
         <form method="POST" action="/login">
-          &nbsp;<label for="email">email</label>&nbsp;
-          <input id="email" type="email" name="email"/>&nbsp;
-          <label for="password">password</label>&nbsp;
-          <input id="password" type="password" name="password">&nbsp;
-          <button type="submit">login</button>
+          &nbsp;&nbsp;<label for="email">Email Address:</label>      
+          &nbsp;<input 
+            class="form-control"
+            style="width: 300px; margin: 1em"
+            id="email" type="email" name="email"/>
+          &nbsp;&nbsp;<label for="password">Password:</label>      
+          &nbsp;<input
+            class="form-control"
+            style="width: 300px; margin: 1em" 
+            id="password" type="password" name="password">
+          &nbsp;&nbsp;<button type="submit" class="btn btn-primary">Login</button>
         </form>
       </div>
       </body>
