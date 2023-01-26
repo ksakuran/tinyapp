@@ -69,7 +69,7 @@ app.post("/register", (req, res) => {
   if(getUserByEmail(userEmail)) {
     return res.status(400).send("Email address is already registered");
   }
-  console.log("hello")
+  //console.log("hello")
   users[id] = {
     id: id,
     email: userEmail,
@@ -84,7 +84,7 @@ app.post("/register", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("userID");
   res.clearCookie("email");
-  res.redirect("/login")
+  res.redirect("/login");
 });
 
 app.post("/urls/:id/update", (req, res) => {
@@ -92,7 +92,7 @@ app.post("/urls/:id/update", (req, res) => {
   //console.log("id", id);
   //console.log(req.body.longurl)
   urlDatabase[id] = req.body.longurl
-  res.redirect("/urls")
+  res.redirect("/urls");
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -101,15 +101,22 @@ app.post("/urls/:id/delete", (req, res) => {
   //console.log("urlDatabase.id", urlDatabase[id])
   delete urlDatabase[id];
   //console.log("urlDatabase.id after delete", urlDatabase[id])
-  res.redirect("/urls")
+  res.redirect("/urls");
   
 });
 
 app.get("/u/:id", (req, res) => {
-  //console.log(req.params.id);
-  const longURL = urlDatabase[req.params.id];
-  //console.log(longURL)
-  res.redirect(`${longURL}`);
+  console.log("req.params", req.params)
+  console.log("req.params.id", req.params.id);
+  
+  if(!urlDatabase[req.params.id]) {
+    return res.status(404).send("Shortened URL is not in database")  
+  }
+  
+  let longURL = urlDatabase[req.params.id];
+  console.log(longURL)
+  return res.redirect(`${longURL}`);
+
 });
 
 app.post("/login", (req, res) => {
@@ -126,7 +133,7 @@ app.post("/login", (req, res) => {
   userData = getUserByEmail(email);
   
   if (userData.password !== password) {
-    return res.status(403).send("Password is incorrect")
+    return res.status(403).send("Password is incorrect");
   }
 
   res.cookie("userID", userData.id)
@@ -137,14 +144,25 @@ app.post("/login", (req, res) => {
 
 
 app.get("/login", (req, res) => {
+  
+  if (req.cookies.userID) {
+    return res.redirect("/urls");
+  }
+  
   const templateVars = {
     userID: req.cookies["userID"],
     email: req.cookies["email"]
   };
+
   res.render("login", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
+
+  if(!req.cookies.userID) {
+    return res.redirect("/login");
+  }
+
   const templateVars = {
     userID: req.cookies["userID"],
     email: req.cookies["email"]
@@ -185,19 +203,29 @@ app.get("/hello", (req, res) => {
 
 
 app.get("/register", (req, res) => {
+  if (req.cookies.userID) {
+    return res.redirect("/urls");
+  }
   const templateVars = {
     userID: req.cookies["userID"],
     email: req.cookies["email"]
   };
-  res.render("register", templateVars)
+  res.render("register", templateVars);
 })
 
 
 app.post("/urls", (req, res) => {
+
+  if (!req.cookies.userID) {
+    // testing to see if database is changed when using curl 
+    //console.log(urlDatabase);
+    return res.status(401).send("Must be logged in to shorten a URL")
+  }
+
   const id = generateRandomString();
   urlDatabase[id] = req.body.longURL;
   //console.log(req.body.longURL);
-  //console.log(urlDatabase);
+  console.log(urlDatabase);
   
   res.redirect(`/urls/${id}`);
 });
