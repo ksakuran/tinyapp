@@ -14,22 +14,22 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
       />
-      <title>Register for TinyApp</title>
+      <title>Login for TinyApp</title>
   </head>
     <body>
       <header>
         <%- include('partials/_header'); %>
       </header>
       <br>
-      <div>&nbsp;Register for TinyApp</div>
+      <div>&nbsp;Login to TinyApp</div>
       <br>
       <div>
-        <form method="POST" action="/register">
+        <form method="POST" action="/login">
           &nbsp;<label for="email">email</label>&nbsp;
           <input id="email" type="email" name="email"/>&nbsp;
           <label for="password">password</label>&nbsp;
           <input id="password" type="password" name="password">&nbsp;
-          <button type="submit">create account</button>
+          <button type="submit">login</button>
         </form>
       </div>
       </body>
