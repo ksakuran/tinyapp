@@ -8,6 +8,18 @@ const generateRandomString = () => {
 };
 
 
+const getUserByEmail = (email) => {
+  for (let user in users) {
+    let userProfile = users[user]
+    let userEmail = users[user].email
+    if (email !== userEmail) {
+      return null;
+    }
+    return userProfile;
+  }
+};
+
+
 const { response } = require("express");
 const express = require("express");
 const app = express();
@@ -43,26 +55,24 @@ const users = {
 app.post("/register", (req, res) => {
   //console.log("req.body", req.body);
   const id = generateRandomString();
-  const emails = req.body.email;
+  const userEmail = req.body.email;
   const password = req.body.password;
   
-  if(!password || !emails) {
+  if(!password || !userEmail) {
     return res.status(400).send("Please enter an email and a password");
   }
   
-  for (let user in users) {
-    console.log(users[user].email)
-     if (users[user].email === emails) {
-       return res.status(400).send("Email has already been registered");
-     }
+  if (getUserByEmail(userEmail) === null) {
+    return res.status(400).send("Email address is already registered");
+  } else {
+      users[id] = {
+      id: id,
+      email: userEmail,
+      password: password
+      };
   }
-
-  users[id] = {
-    id: id,
-    email: emails,
-    password: password};
-    res.cookie("userID", users[id])
-  //console.log("users:", users);
+  //res.cookie("userID", users[id])
+  console.log("users:", users);
   res.redirect("/urls")
 });
 
