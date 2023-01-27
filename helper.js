@@ -1,21 +1,5 @@
 
 
-// const urlDatabase = {
-//   "b2xVn2": {
-//     longURL: "http://www.lighthouselabs.ca",
-//     userID: "aJ48lW",
-//   },
-//   "9sm5xK": {
-//     longURL: "https://www.google.ca",
-//     userID: "aJ48lW",
-//   },
-//   "9sm5x8": {
-//     longURL: "https://http.cat/",
-//     userID: "diff",
-//   },
-// };
-
-
 const getUserByEmail = (email, database) => {
   
   for (let user in database) {
