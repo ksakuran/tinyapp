@@ -269,6 +269,7 @@ app.get('/urls', (req, res) => {
     return res.status(403).send("Must be logged in to view your URLs");
   }
 
+  //loops through on the index page to only show urls associated with the user
   const usersURLs = urlsForUserByUserID(req.session.userID);
 
   const templateVars = {
