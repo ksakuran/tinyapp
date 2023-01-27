@@ -44,6 +44,7 @@ const { response } = require("express");
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+const bcrypt = require("bcryptjs");
 const cookieParser = require('cookie-parser');
 const PORT = 8080; //default port on 8080;
 
@@ -105,6 +106,8 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const userEmail = req.body.email;
   const password = req.body.password;
+
+  const hashedPassword = bcrypt.hashSync(password, 10);
   
   if (!password || !userEmail) {
     return res.status(400).send("Please enter an email and a password");
@@ -117,8 +120,9 @@ app.post("/register", (req, res) => {
   users[id] = {
     id: id,
     email: userEmail,
-    password: password
+    password: hashedPassword
   };
+  console.log("users after register:", users)
   //res.cookie("userID", users[id])
   return res.redirect("/login");
 });
@@ -148,21 +152,21 @@ app.post("/login", (req, res) => {
   //console.log("req.body", req.body);
   const email = req.body.email;
   const password =req.body.password;
-
-  console.log("getuserbyemail",getUserByEmail(email));
-
+  
+  //console.log("getuserbyemail",getUserByEmail(email));
+  
   if (!getUserByEmail(email)) {
     return res.status(403).send("User credentials not found");
   }
-
-  userData = getUserByEmail(email);
   
-  if (userData.password !== password) {
-    return res.status(403).send("Password is incorrect");
+  userData = getUserByEmail(email);
+  const hashedPassword = userData.password
+  
+  if (!bcrypt.compareSync(password, hashedPassword)) {
+    return res.status(403).send("User credentials incorrect");
   }
 
   res.cookie("userID", userData.id)
-  //res.cookie("password", password)
   res.cookie("email", email);
   res.redirect("/urls");
 });
