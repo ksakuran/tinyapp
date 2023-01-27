@@ -12,10 +12,9 @@
     "url": "git+https://github.com/ksakuran/tinyapp.git"
   },
   "keywords": [],
-  "author": [
-    "Katherine Nishimura",
-    "katherine.nishimura@live.ca"
-  ],
+  "author":
+    "Katherine Nishimura katherine.nishimura@live.ca",
+  
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ksakuran/tinyapp/issues"
