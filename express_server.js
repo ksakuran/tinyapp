@@ -1,3 +1,4 @@
+//left these helper functions at the top, because compass instructions say not to worry about exporting modules
 const generateRandomString = () => {
   let randomString = "";
   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
@@ -22,7 +23,6 @@ const urlsForUserByUserID = (userTag) => {
   return usersURLs;
 };
 
-
 const getUserByEmail = (email, database) => {
   
   for (let user in database) {
@@ -38,8 +38,6 @@ const getUserByEmail = (email, database) => {
   
   return null;
 };
-
-
 
 const express = require("express");
 const app = express();
@@ -88,10 +86,118 @@ const users = {
   },
 };
 
+
+//redirects any user (logged in or not) to the actual link that is stored at the short url ID
+app.get("/u/:id", (req, res) => {
+  const shortUrlID = req.params.id;
+  
+  if (!urlDatabase[shortUrlID]) {
+    return res.status(404).send("Shortened URL is not in database");
+  }
+  
+  let longURL = urlDatabase[shortUrlID].longURL;
+  
+  return res.redirect(`${longURL}`);
+  
+});
+
+app.get("/login", (req, res) => {
+  
+  if (req.session.userID) {
+    return res.redirect("/urls");
+  }
+  
+  const templateVars = {
+    userID: req.session["userID"]
+  };
+  
+  res.render("login", templateVars);
+});
+
+app.get("/urls/new", (req, res) => {
+
+  if (!req.session.userID) {
+    return res.redirect("/login");
+  }
+
+  const templateVars = {
+    userID: req.session["userID"],
+    email: req.session["email"]
+  };
+  
+  res.render("urls_new", templateVars);
+});
+
+app.get("/urls/:id", (req, res) => {
+  
+  const shortUrlID = req.params.id;
+  
+  if (!req.session.userID) {
+    return res.status(403).send("User must be logged in to view or edit a URL");
+  }
+  
+  if (!urlDatabase[shortUrlID]) {
+    return res.status(404).send("Short URL not found")
+  }
+  
+  if (urlDatabase[shortUrlID].userID !== req.session.userID) {
+    return res.status(401).send("Short URL detail page is only accessible for Short URL's created by your account");
+  }
+  
+  
+  const templateVars = {
+    id: shortUrlID,
+    longURL: urlDatabase[shortUrlID].longURL,
+    userID: req.session["userID"],
+    email: req.session["email"]
+  };
+  res.render("urls_show", templateVars);
+});
+
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
+
+app.get("/urls", (req, res) => {
+  
+  if (!req.session.userID) {
+    return res.status(403).send("Must be logged in to view your URLs");
+  }
+  
+  //loops through on the index page to only show urls associated with the user
+  const usersURLs = urlsForUserByUserID(req.session.userID);
+  
+  const templateVars = {
+    urls: usersURLs,
+    userID: req.session["userID"],
+    email: req.session["email"]
+  };
+  
+  res.render("urls_index", templateVars);
+});
+
+app.get("/register", (req, res) => {
+  if (req.session.userID) {
+    return res.redirect("/urls");
+  }
+  const templateVars = {
+    userID: req.session["userID"],
+    email: req.session["email"]
+  };
+  res.render("register", templateVars);
+});
+
+app.get("/", (req, res) => {
+  if (req.session.userID) {
+    res.redirect("/urls");
+  }
+  res.redirect("/login")
+});
+
+
 app.post("/urls", (req, res) => {
 
   if (!req.session.userID) {
-
     return res.status(401).send("Must be logged in to shorten a URL");
   }
   
@@ -99,13 +205,14 @@ app.post("/urls", (req, res) => {
   
   //add new short url id key to url database
   urlDatabase[shortUrlID] = {
-    userID: req.session.userID,
-    longURL: req.body.longURL
+    longURL: req.body.longURL,
+    userID: req.session.userID
   };
-  
+
   res.redirect(`/urls/${shortUrlID}`);
 });
 
+//adding new user to users object database
 app.post("/register", (req, res) => {
   const userTag = generateRandomString();
   const userEmail = req.body.email;
@@ -134,6 +241,7 @@ app.post("/register", (req, res) => {
   return res.redirect("/urls");
 });
 
+//clearing cookies and redirecting to login page
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/login");
@@ -141,26 +249,28 @@ app.post("/logout", (req, res) => {
 
 // added the /update to make it clearer what is happening at this route
 app.post("/urls/:id/update", (req, res) => {
+  const shortUrlID = req.params.id;
   
   if (!req.session.userID) {
     res.status(401).send("Only logged in user's can edit shortened URL details");
   }
 
-  if (req.session.userID !== urlDatabase[id].userID) {
+  if (req.session.userID !== urlDatabase[shortUrlID].userID) {
     return res.status(404).send("URL is not owned by user, cannot edit");
   }
-
-  const shortUrlID = req.params.id;
-
+  //reassigns the longurl associated with the short url id
   urlDatabase[shortUrlID].longURL = req.body.longurl;
+
   res.redirect("/urls");
 });
+
 
 app.post("/login", (req, res) => {
 
   const emailFromForm = req.body.email;
   const passwordFromForm = req.body.password;
   
+  //check that account is registered
   if (!getUserByEmail(emailFromForm, users)) {
     return res.status(403).send("User credentials not found");
   }
@@ -168,6 +278,7 @@ app.post("/login", (req, res) => {
   const userData = getUserByEmail(emailFromForm, users);
   const hashedPassword = userData.password;
   
+  //check if passwords match
   if (!bcrypt.compareSync(passwordFromForm, hashedPassword)) {
     return res.status(403).send("User credentials incorrect");
   }
@@ -192,108 +303,10 @@ app.post("/urls/:id/delete", (req, res) => {
   if (req.session.userID !== urlDatabase[shortUrlID].userID) {
     return res.status(404).send("URL is not owned by user, cannot delete");
   }
-
+  
   delete urlDatabase[shortUrlID];
 
   res.redirect("/urls");
-});
-
-app.get("/u/:id", (req, res) => {
-  const shortUrlID = req.params.id;
-
-  if (!urlDatabase[shortUrlID]) {
-    return res.status(404).send("Shortened URL is not in database");
-  }
-
-  let longURL = urlDatabase[shortUrlID].longURL;
-
-  return res.redirect(`${longURL}`);
-
-});
-
-app.get("/login", (req, res) => {
-  
-  if (req.session.userID) {
-    return res.redirect("/urls");
-  }
-  
-  const templateVars = {
-    userID: req.session["userID"]
-  };
-
-  res.render("login", templateVars);
-});
-
-app.get("/urls/new", (req, res) => {
-
-  if (!req.session.userID) {
-    return res.redirect("/login");
-  }
-
-  const templateVars = {
-    userID: req.session["userID"],
-    email: req.session["email"]
-  };
-
-  res.render("urls_new", templateVars);
-});
-
-app.get("/urls/:id", (req, res) => {
-  
-  const shortUrlID = req.params.id;
-
-  if (!req.session.userID) {
-    return res.status(403).send("User must be logged in to view or edit a URL");
-  }
-
-  if (urlDatabase[shortUrlID].userID !== req.session.userID) {
-    return res.status(401).send("Short URL detail page is only accessible for Short URL's created by your account");
-  }
- 
-  const templateVars = {
-    id: shortUrlID,
-    longURL: urlDatabase[shortUrlID].longURL,
-    userID: req.session["userID"],
-    email: req.session["email"]
-  };
-  res.render("urls_show", templateVars);
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get('/urls', (req, res) => {
-  
-  if (!req.session.userID) {
-    return res.status(403).send("Must be logged in to view your URLs");
-  }
-
-  //loops through on the index page to only show urls associated with the user
-  const usersURLs = urlsForUserByUserID(req.session.userID);
-
-  const templateVars = {
-    urls: usersURLs,
-    userID: req.session["userID"],
-    email: req.session["email"]
-  };
-
-  res.render("urls_index", templateVars);
-});
-
-app.get("/register", (req, res) => {
-  if (req.session.userID) {
-    return res.redirect("/urls");
-  }
-  const templateVars = {
-    userID: req.session["userID"],
-    email: req.session["email"]
-  };
-  res.render("register", templateVars);
-});
-
-app.get("/", (req, res) => {
-  res.send("Hello!");
 });
 
 app.listen(PORT, () => {
